@@ -7,6 +7,7 @@ import RTL from "../views/Rtl.vue";
 import Profile from "../views/Profile.vue";
 import Signup from "../views/Signup.vue";
 import Signin from "../views/Signin.vue";
+import Admin from "../views/Admin.vue";
 
 const routes = [
   {
@@ -54,7 +55,11 @@ const routes = [
     name: "Signup",
     component: Signup,
   },
-  
+  {
+    path: "/admin",
+    name: "Admin",
+    component: Admin,
+  },
 ];
 
 const router = createRouter({
