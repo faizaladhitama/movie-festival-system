@@ -7,7 +7,7 @@ import RTL from "../views/Rtl.vue";
 import Profile from "../views/Profile.vue";
 import Signup from "../views/Signup.vue";
 import Signin from "../views/Signin.vue";
-import Admin from "../views/Admin.vue";
+import Movies from "../views/Movies.vue";
 
 const routes = [
   {
@@ -56,9 +56,9 @@ const routes = [
     component: Signup,
   },
   {
-    path: "/admin",
-    name: "Admin",
-    component: Admin,
+    path: "/movies",
+    name: "Movies",
+    component: Movies,
   },
 ];
 

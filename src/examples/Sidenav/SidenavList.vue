@@ -17,9 +17,9 @@
       </li>
       <li class="nav-item">
         <sidenav-item
-          url="/admin"
-          :class="getRoute() === 'admin' ? 'active' : ''"
-          :navText="'Admin'"
+          url="/movies"
+          :class="getRoute() === 'movies' ? 'active' : ''"
+          :navText="'Movies'"
         >
           <template v-slot:icon>
             <i class="ni ni-circle-08 text-primary text-sm opacity-10"></i>
