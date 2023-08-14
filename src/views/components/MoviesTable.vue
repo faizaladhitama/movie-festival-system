@@ -32,34 +32,38 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr v-for="movie in movies" :key="movie.id">
                 <td class="align-middle text-center">
-                  1
+                  {{ movie.id }}
                 </td>
                 <td class="text-xs align-middle text-center mb-0">
-                  Laskar Pelangi
+                  {{ movie.title }}
                 </td>
                 <td class="text-xs align-middle text-center mb-0">
-                  Kisah anak SD
+                  {{ movie.description }}
                 </td>
                 <td class="text-xs align-middle text-center mb-0">
-                  02:00:00
+                  {{ movie.duration }}
                 </td>
                 <td class="text-xs align-middle text-center mb-0">
-                  Artis 1
+                  <div v-for="movies_artists in movie.movies_artists" :key="movies_artists.id">
+                    {{ movies_artists.artists.name }}
+                  </div>
                 </td>
                 <td class="text-xs align-middle text-center mb-0">
-                  Thriller
+                  <div v-for="movies_genres in movie.movies_genres" :key="movies_genres.id">
+                    {{ movies_genres.genres.name }}
+                  </div>
                 </td>
                 <td class="text-xs align-middle text-center mb-0">
-                  https://www.youtube.com/
+                  <a v-bind:href="movie.watch_url">{{ movie.watch_url }}</a>
                 </td>
-                <td class="align-middle" @click="deleteBtn(1)">
+                <td class="align-middle" @click="deleteBtn(movie.id)">
                   <a class="btn btn-link text-danger text-gradient px-3 mb-0" >
                     <i class="far fa-trash-alt me-2" aria-hidden="true"></i>Delete
                   </a>
                 </td>
-                <td class="align-middle"  @click="editBtn(1)">
+                <td class="align-middle"  @click="editBtn(movie.id)">
                   <a class="btn btn-link text-dark px-3 mb-0">
                     <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit
                   </a>
@@ -67,18 +71,51 @@
               </tr>
             </tbody>
           </table>
+          </div>
+            <Page
+              ref="pageRef"
+              v-model="page.number"
+              language="en"
+              :total-row="page.totalRow"
+              @change="paginationChange"
+              :info="false"
+              :first="true"
+              :last="true"
+              :display-all="true"
+              v-slot="{ pageNumber}"
+              >
+              <div>
+                <div>Current: {{pageNumber == 0 ? 1 : pageNumber}} / {{ Math.ceil((page.totalRow == 0 ? 1 : page.totalRow)/page.size) }}</div>
+              </div>
+            </Page>
         </div>
-      </div>
     </div>
   </template>
   
   <script>
   import ArgonButton from "@/components/ArgonButton.vue";
+  import { Page } from 'v-page'
+  import { supabase } from '../../lib/supabaseClient.js'
 
   export default {
     name: "movies-table",
+    data() {
+      return {
+        page: {
+          number: 1,
+          totalRow: 20,
+          size: 10,
+          range: {
+            from: 0,
+            to: 9
+          }
+        },
+        movies: []
+      };
+    },
     components: {
       ArgonButton,
+      Page
     },
     methods: {
       deleteBtn(id){
@@ -89,8 +126,33 @@
         console.log("edit");
         console.log(id);
         this.$router.push(`/movie/${id}`)
+      },
+      async paginationChange(data){
+        this.page.number = data.pageNumber;
+        this.page.size = data.pageSize;
+        this.page.range.from = data.pageSize * (data.pageNumber-1);
+        this.page.range.to = (data.pageSize * data.pageNumber)-1;
+
+        await this.getMovies();
+      },
+      async getMovies(){
+        const { data, count, error } = await supabase
+          .from('movies')
+          .select(`*,movies_artists(artists(id, name)),movies_genres(genres(id, name))`, { count: 'exact'})
+          .range(this.page.range.from, this.page.range.to)
+        if(error){
+          console.error(error)
+        }else{
+          console.log(data)
+          console.log(count)
+          this.movies = data
+          this.page.totalRow = count;
+        }
       }
-    }
+    },
+    async mounted() {
+      await this.getMovies();
+    },
   };
   </script>
   
