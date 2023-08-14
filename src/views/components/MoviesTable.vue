@@ -1,7 +1,19 @@
 <template>
     <div class="card">
-      <div class="card-header pb-0">
-        <h6>Movies table</h6>
+      <div class="card-header pb-0 p-3">
+        <div class="row">
+          <div class="col-6 d-flex align-items-center">
+            <h6 class="mb-0">Movies Table</h6>
+          </div>
+          <div class="col-6 text-end">
+            <a href="/movie/form">
+              <argon-button color="dark" variant="gradient">
+                <i class="fas fa-plus me-2"></i>
+                  Add New Movies
+              </argon-button>
+            </a>
+          </div>
+        </div>
       </div>
       <div class="card-body px-0 pt-0 pb-2">
         <div class="table-responsive p-0">
@@ -42,13 +54,13 @@
                 <td class="text-xs align-middle text-center mb-0">
                   https://www.youtube.com/
                 </td>
-                <td class="align-middle">
-                  <a class="btn btn-link text-danger text-gradient px-3 mb-0" href="javascript:;">
+                <td class="align-middle" @click="deleteBtn(1)">
+                  <a class="btn btn-link text-danger text-gradient px-3 mb-0" >
                     <i class="far fa-trash-alt me-2" aria-hidden="true"></i>Delete
                   </a>
                 </td>
-                <td class="align-middle">
-                  <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;">
+                <td class="align-middle"  @click="editBtn(1)">
+                  <a class="btn btn-link text-dark px-3 mb-0">
                     <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit
                   </a>
                 </td>
@@ -61,8 +73,24 @@
   </template>
   
   <script>
+  import ArgonButton from "@/components/ArgonButton.vue";
+
   export default {
     name: "movies-table",
+    components: {
+      ArgonButton,
+    },
+    methods: {
+      deleteBtn(id){
+        console.log("delete");
+        console.log(id);
+      },
+      editBtn(id){
+        console.log("edit");
+        console.log(id);
+        this.$router.push(`/movie/${id}`)
+      }
+    }
   };
   </script>
   

@@ -15,6 +15,14 @@
           </template>
         </sidenav-item>
       </li>
+      <li class="mt-3 nav-item">
+        <h6
+          class="text-xs ps-4 text-uppercase font-weight-bolder opacity-6"
+          :class="'ms-2'"
+        >
+          ADMIN PAGES
+        </h6>
+      </li>
       <li class="nav-item">
         <sidenav-item
           url="/movies"
@@ -22,7 +30,18 @@
           :navText="'Movies'"
         >
           <template v-slot:icon>
-            <i class="ni ni-circle-08 text-primary text-sm opacity-10"></i>
+            <i class="ni ni-album-2 text-primary text-sm opacity-10"></i>
+          </template>
+        </sidenav-item>
+      </li>
+      <li class="nav-item">
+        <sidenav-item
+          url="/movies/analytic"
+          :class="getRoute() === '/movies/analytic' ? 'active' : ''"
+          :navText="'Movies Analytic / Tracking'"
+        >
+          <template v-slot:icon>
+            <i class="ni ni-chart-bar-32 text-primary text-sm opacity-10"></i>
           </template>
         </sidenav-item>
       </li>
@@ -136,7 +155,7 @@ export default {
   },
   data() {
     return {
-      title: "Argon Dashboard 2",
+      title: "Movie Festival System",
       controls: "dashboardsExamples",
       isActive: "active"
     };
@@ -147,8 +166,7 @@ export default {
   },
   methods: {
     getRoute() {
-      const routeArr = this.$route.path.split("/");
-      return routeArr[1];
+      return this.$route.path;
     }
   }
 };
