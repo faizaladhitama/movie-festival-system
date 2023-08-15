@@ -57,11 +57,20 @@
                   <label for="artists" class="form-control-label"
                     >Artists</label
                   >
-                  <argon-input
-                    type="text"
-                    name="artists"
-                    value="Artists"
-                  />
+                  <Multiselect
+                    v-model="movie_artists"
+                    :options="artists"
+                    label="name"
+                    placeholder="Select artists"
+                    track-by="id"
+                    mode="tags"
+                    :close-on-select="false"
+                    :searchable="true"
+                    :create-option="true"
+                    :search="true"
+                    :object="true"
+                    >
+                  </Multiselect>
                 </div>
               </div>
               <div class="row">
@@ -69,11 +78,21 @@
                   <label for="genres" class="form-control-label"
                     >Genres</label
                   >
-                  <argon-input
-                    type="text"
-                    name="genres"
-                    value="Genres"
-                  />
+
+                  <Multiselect
+                    v-model="movie_genres"
+                    :options="genres"
+                    label="name"
+                    placeholder="Select genres"
+                    track-by="id"
+                    mode="tags"
+                    :close-on-select="false"
+                    :searchable="true"
+                    :create-option="true"
+                    :search="true"
+                    :object="true"
+                    >
+                  </Multiselect>
                 </div>
               </div>
               <div class="row">
@@ -100,15 +119,22 @@
 
 <script>
 import ArgonInput from "@/components/ArgonInput.vue";
+import Multiselect from '@vueform/multiselect';
+import { supabase } from '../lib/supabaseClient.js';
+
 
 export default {
   name: "movies",
   data() {
     return {
+      movie_artists: null,
+      movie_genres: null,
+      artists: [],
+      genres: [],
       showMenu: false
     };
   },
-  components: { ArgonInput},
+  components: { ArgonInput, Multiselect},
   methods: {
     submitForm(e){
       let formData = new FormData(e.target);
@@ -127,6 +153,34 @@ export default {
       console.log(formData);
       return false;
     },
+    async getListOfGenres(){
+      let builder = supabase
+          .from('genres')
+          .select(`*`, { count: 'exact'})
+          const { data, count, error } = await builder;
+          if(error){
+            console.error("ERROR")
+            console.error(error)
+          }else{
+            console.log(data)
+            console.log(count)
+            this.genres = data;
+          }
+    },
+    async getListOfArtists(){
+      let builder = supabase
+          .from('artists')
+          .select(`*`, { count: 'exact'})
+          const { data, count, error } = await builder;
+          if(error){
+            console.error("ERROR")
+            console.error(error)
+          }else{
+            console.log(data)
+            console.log(count)
+            this.artists = data;
+          }
+    },
   },  
   mounted() {
     let params = this.$route.params;
@@ -136,7 +190,9 @@ export default {
     }else{
       this.$store.state.isCreate = false;
     }
-    console.log(params);
+    
+    this.getListOfGenres();
+    this.getListOfArtists();
   },
 };
 </script>
