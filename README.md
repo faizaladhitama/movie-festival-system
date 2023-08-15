@@ -37,8 +37,8 @@ During the development of this dashboard, we have used many existing resources f
 Let us know your thoughts below. And good luck with development!
 
 ## Table of Contents
-
 - [Versions](#versions)
+- [How To Run](#how-to-run)
 - [Demo](#demo)
 - [Quick Start](#quick-start)
 - [Documentation](#documentation)
@@ -59,6 +59,10 @@ Let us know your thoughts below. And good luck with development!
 
 | [![Vue Argon Dashboard 2](https://s3.amazonaws.com/creativetim_bucket/products/156/orginal/vue-argon-dashboard.jpg)](http://demos.creative-tim.com/vue-argon-dashboard/?ref=readme-vad)
 
+## How To Run
+1. npm install
+2. npm run serve-windows / npm run serve-unix (depend on OS)
+3. Open web in browser
 ## Demo
 
 - [Profile](https://demos.creative-tim.com/vue-argon-dashboard/#/profile?ref=readme-vad)
