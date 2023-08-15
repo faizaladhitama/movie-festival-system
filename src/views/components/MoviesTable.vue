@@ -2,6 +2,15 @@
     <div class="card">
       <div class="card-header pb-0 p-3">
         <div class="row">
+          <div class="pb-3">
+            <input id="search" v-model="search" type="text" class="form-control form-control-default"/>
+            <argon-button color="dark" variant="gradient"  @click="searchBtn">
+              Search
+            </argon-button>
+          </div>
+          
+        </div>
+        <div class="row">
           <div class="col-6 d-flex align-items-center">
             <h6 class="mb-0">Movies Table</h6>
           </div>
@@ -46,14 +55,19 @@
                   {{ movie.duration }}
                 </td>
                 <td class="text-xs align-middle text-center mb-0">
-                  <div v-for="movies_artists in movie.movies_artists" :key="movies_artists.id">
-                    {{ movies_artists.artists.name }}
-                  </div>
+                  <template v-if="movie.artist_list != null">
+                    <template v-for="artist in movie.artist_list.split(';')" v-bind:key="artist">
+                        <div>{{ artist }}</div>
+                    </template>
+                  </template>
                 </td>
                 <td class="text-xs align-middle text-center mb-0">
-                  <div v-for="movies_genres in movie.movies_genres" :key="movies_genres.id">
-                    {{ movies_genres.genres.name }}
-                  </div>
+                  <template v-if="movie.genre_list != null">
+                    <template v-for="genre in movie.genre_list.split(';')" v-bind:key="genre">
+                      <div>{{ genre }}</div>
+                    </template>
+                  </template>
+                  
                 </td>
                 <td class="text-xs align-middle text-center mb-0">
                   <a v-bind:href="movie.watch_url">{{ movie.watch_url }}</a>
@@ -101,6 +115,7 @@
     name: "movies-table",
     data() {
       return {
+        search:null,
         page: {
           number: 1,
           totalRow: 20,
@@ -127,20 +142,46 @@
         console.log(id);
         this.$router.push(`/movie/${id}`)
       },
-      async paginationChange(data){
+      paginationChange(data){
         this.page.number = data.pageNumber;
         this.page.size = data.pageSize;
         this.page.range.from = data.pageSize * (data.pageNumber-1);
         this.page.range.to = (data.pageSize * data.pageNumber)-1;
 
-        await this.getMovies();
+        this.getMovies();
       },
-      async getMovies(){
-        const { data, count, error } = await supabase
-          .from('movies')
-          .select(`*,movies_artists(artists(id, name)),movies_genres(genres(id, name))`, { count: 'exact'})
-          .range(this.page.range.from, this.page.range.to)
+      searchBtn(){
+        this.getMovies([
+          {
+            column:'title',
+            operator: 'like',
+            value: this.search
+          },
+          {
+            column:'description',
+            operator: 'like',
+            value: this.search
+          },{
+            column:'artist_list',
+            operator: 'like',
+            value: this.search
+          }
+        ])
+      },
+      async getMovies(filter){
+        let builder = supabase
+          .from('movies_view')
+          .select(`*`, { count: 'exact'})
+        if(filter !== undefined && filter !== null){
+          let arr = [];
+          filter.forEach(e => {
+            arr.push(`${e.column}.${e.operator}.%${e.value}%`);
+          });
+          builder = builder.or(arr.join(","))
+        }
+        const { data, count, error } = await builder.range(this.page.range.from, this.page.range.to)
         if(error){
+          console.error("ERROR")
           console.error(error)
         }else{
           console.log(data)
@@ -150,9 +191,8 @@
         }
       }
     },
-    async mounted() {
-      await this.getMovies();
+    mounted() {
+      this.getMovies();
     },
   };
   </script>
-  
